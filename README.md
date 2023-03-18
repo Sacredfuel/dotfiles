@@ -47,7 +47,7 @@ allow for further customization
 
 In order to do this we'll need a module called Oh-My-Posh
 
-From Powershell: 
+From Windows Terminal: 
 
 ```powershell
 winget install JanDeDobbeleer.OhMyPosh -s winget
