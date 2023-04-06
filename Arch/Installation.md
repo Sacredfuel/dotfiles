@@ -14,7 +14,7 @@ ping -c 3 google.com             #tests the connection
 ip -c a                          #make sure UP
 ```
 
-#### Internal Clock
+### Internal Clock
 
 ```bash
 timedatectl status               #get current time
@@ -22,7 +22,7 @@ timedatectl list-timezones       #find your timezone
 timedatectl set-timezones <var>  #sets the timezone
 ```
 
-#### Partition Management
+### Partition Management
 
 ```
 lsblk                            #take the name of the drive
@@ -35,7 +35,7 @@ Create home filesystem partition with remaining memory
 
 Write all the changes and quit.
 
-#### Formatting Partitions
+### Formatting Partitions
 
 We need to format the partitions with ext4
 
@@ -107,8 +107,33 @@ vim /etc/hosts                          #add the following
 ```
 
 ### Timezone/Region
+
 ```shell
 ln -sf /usr/share/zoneinfo/<tab> /etc/localtime
 #use tab to find your zone e.x. America/New_York
 hwclock --systohc
+```
+
+### Grub Boot Loader
+
+```shell
+cfdisk /dev/<name of drive>             #get the EFI Partition <efi>
+mkdir /boot/efi                         #making the directory of our bootloader
+mount /dev/<efi> /boot/efi              #changing the bootloader to our one
+pacman -S efibootmgr dosfstools mtools grub
+vim /etc/default/grub                   #uncomment the last line |GRUB_DISABLE_OS_PROBER=false|
+pacman -S os-prober                     #allows grub to detect windows
+grub-install --target=x86_64_efi --bootloader-id=grub_uefi --recheck
+grub-mkconfig -o /boot/grub/grub.cfg
+ls /boot/efi/EFI                        #list all boot options
+```
+
+### Finalizing the USB
+
+```shell
+systemctl enable dhcpcd.service         #enable IP Ports
+systemctl enable NetworkManager.service #enable network manager
+exit                                    #exit chroot enviorment
+unmount -lR /mnt                        #unmount all partitions
+reboot
 ```
