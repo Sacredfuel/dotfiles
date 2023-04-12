@@ -1,9 +1,10 @@
 # Arch Installation
 
-Writeup of the Arch Linux Installation Process.
+Writeup of the Arch Linux Installation Process with a custom bootloader.
 
 ### Connecting to Wifi
-First thing we need to do is connect to the internet as all packages are on the Arch User Repository(AUR) and we cannot access it without an internet connection, if you are already connected to ethernet, test it with the ping command, otherwise follow these instructions for a WiFi setup.
+
+First thing we need to do is connect to the internet as all packages are on the Arch User Repository(AUR) which requires an internet connection, if you are already connected to ethernet, test it with the ping command, otherwise follow these instructions for a WiFi setup.
 
 ```bash
 iwctl
@@ -12,10 +13,11 @@ station wlan0 get-networks       #list the avalible networks
 station wlan0 connect <name>     #connects to the selected wifi
 
 ping -c 3 google.com             #tests the connection
-ip -c a                          #make sure UP
+ip -c a                          #make sure UP is in the output
 ```
 
 ### Internal Clock
+
 Next we need the system's internal clock to be synced with the real time.
 
 ```bash
@@ -25,6 +27,7 @@ timedatectl set-timezones <var>  #sets the timezone
 ```
 
 ### Partition Management
+
 Now we need to do the scary part, we'll need to setup 3 partitions. The main ones we'll need is a root partition with our main filesystem, a home partition and a swap partition.
 
 ```bash
@@ -32,15 +35,20 @@ lsblk                            #take the name of the drive
 cfdisk /dev/<name>               #open the partition manager
 ```
 
-Create root filesystem partition with >10G 
-Create swap partition with ~8G
+Create root filesystem partition with >10G (ideally 30G)
+The root partition will hold all of our OS files.
+
+Create swap partition with ~8G (for 16G of RAM)
+This will act as our extended RAM for if we have too many processes active.
+
 Create home filesystem partition with remaining memory
+This will be for the remaining files.
 
 Write all the changes and quit.
 
 ### Formatting Partitions
 
-We need to format the partitions with ext4.
+We need to format the partitions in ext4 (default for most Linux Distros) and make the swap instantiate the swap partition.
 
 ```bash
 mkfs.ext4 /dev/<root>
@@ -48,12 +56,13 @@ mkfs.ext4 /dev/<home>
 mkswap /dev/<swap>
 swapon /dev/<swap>
 ```
+
 Verify with lsblk.
 
 
 ### Mounting Drives
 
-Now that the drives are formatted, we can mount them to our partitions.
+Now that the drives are formatted, we can mount them to their respective partitions.
 
 ```bash
 mount /dev/<root> /mnt
@@ -65,7 +74,7 @@ Verify with lsblk.
 
 ### Speeding up installation
 
-While this step is optional, we will be choosing the top 10 sources for pacman to speed up the calls to the AUR.
+While this step is optional, we will be choosing the top 10 sources for pacman to speed up the calls to the AUR and Pacman as a whole.
 
 ```bash
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
@@ -75,9 +84,11 @@ rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
 cat /etc/pacman.d/mirrorlist
 ```
 
-### Installing Arch to /mnt
+### Installing Arch to /mnt or home
 
 Now that we have pacman fully operational, and our partitions are properly formatted we can install the real OS onto our drive.
+In this step we'll also be making a file tree to allow for data storage and we'll give root privilages to the home directory.
+We'll also add our user to the sudoers file so they can run sudo commands.
 
 ```bash
 pacstrap -u /mnt base base-devel linux linux-lts linux-headers linux-firmware intel-ucode sudo nano vim git github-cli neofetch networkmanager dhcpcd pulseaudio
@@ -121,7 +132,7 @@ vim /etc/hosts                          #add the following
 
 ### Timezone/Region
 
-Now to link our Internal Clock to the Hardware clock.
+Now to link our OS Clock to the Hardware clock.
 
 ```shell
 ln -sf /usr/share/zoneinfo/<tab> /etc/localtime
@@ -159,7 +170,7 @@ reboot
 
 ### GUI - KDE Plasma
 
-Now that we have Arch fully installed and mounted, we need to install a graphical user interface to use, in this case we will use KDE Plasma.
+Now that we have Arch fully installed and mounted, we need to install a graphical user interface to use, in this case we will use KDE Plasma but feel free to use your GUI of choice.
 
 ```shell
 sudo pacman -S xorg xorg-init xterm plasma plasma-desktop plasma-wayland-session kde-applications kdeplasma-addons sddm
