@@ -1,10 +1,4 @@
-require("settings")
-require("plugins")
+require('keybindings')
+require('packages')
+require('config')
 
-local themeStatus, kanagawa = pcall(require, "kanagawa")
-
-if themeStatus then
-  vim.cmd("colorscheme kanagawa")
-else
-  return
-end
