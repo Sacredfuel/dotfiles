@@ -18,4 +18,5 @@ require('packer').startup(function()
       }
     end
   }
+  use 'nvim-treesitter/nvim-treesitter'
 end)
