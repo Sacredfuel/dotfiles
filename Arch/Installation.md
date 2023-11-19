@@ -41,10 +41,10 @@ The root partition will hold all of our OS files.
 Create swap partition with ~8G (for 16G of RAM)
 This will act as our extended RAM for if we have too many processes active.
 
-Create home filesystem partition with remaining memory
+Create home filesystem partition with remaining memory (leave this empty for the rest of your space)
 This will be for the remaining files.
 
-Write all the changes and quit.
+Type in `w` to write all the changes and quit.
 
 ### Formatting Partitions
 
@@ -62,7 +62,7 @@ Verify with lsblk.
 
 ### Mounting Drives
 
-Now that the drives are formatted, we can mount them to their respective partitions.
+Now that the drives are formatted, we can mount them onto their respective partitions.
 
 ```bash
 mount /dev/<root> /mnt
